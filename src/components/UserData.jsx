@@ -41,7 +41,7 @@ const usersData = [
   },
   {
     id: 5,
-    name: 'Hassan Malik',
+    name: 'Hassan Khan',
     email: 'hassan@example.com',
     phone: '+92 304 4445555',
     role: 'User',
@@ -51,7 +51,7 @@ const usersData = [
   },
   {
     id: 6,
-    name: 'Alma',
+    name: 'Alma Elexender',
     email: 'ayesha@example.com',
     phone: '+92 305 6667777',
     role: 'Admin',
@@ -61,7 +61,7 @@ const usersData = [
   },
   {
     id: 7,
-    name: 'Bilal Tariq',
+    name: 'Bilal Faisal',
     email: 'bilal@example.com',
     phone: '+92 306 8889999',
     role: 'User',
