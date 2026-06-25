@@ -43,7 +43,7 @@ export default function Settings() {
   const languages = [
     { value: 'en', label: 'English' },
     { value: 'ur', label: 'Urdu' },
-    { value: 'ar', label: 'Arabic' },
+    { value: 'itl', label: 'Italian' },
     { value: 'fr', label: 'French' },
   ];
 
