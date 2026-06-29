@@ -29,7 +29,7 @@ const Register = () => {
     }));
   };
 
-  const handleRegister = () => {
+  const handleRegister = async() => {
     const { name, email, password } = userData;
 
    if (!name || !email || !password) {
