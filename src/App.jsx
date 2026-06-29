@@ -1,15 +1,26 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import Login from './pages/LoginPage';
+import Register from './pages/RegisterPage';
 import Home from './pages/Dashboard';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import AppLayout from './Layout/AppLayout';
 import Users from './pages/Users';
 import Products from './pages/Products';
+import ProtectedRoute from './routes/ProtectedRoute';
 const App = () => {
   const router = createBrowserRouter([
     {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+  },
+    {
       path: '/',
-      element: <AppLayout />,
+      element: (<ProtectedRoute><AppLayout /></ProtectedRoute>),
       children: [
         {
           path: '/',
