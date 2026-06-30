@@ -16,6 +16,10 @@ import GroupIcon from '@mui/icons-material/Group';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import LocalGroceryStoreIcon from '@mui/icons-material/LocalGroceryStore';
+import { Button } from '@mui/material';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { signOut } from 'firebase/auth';
+import { auth } from '../FirebaseConfig';
 import { useNavigate } from 'react-router-dom';
 const drawerWidth = 240;
 
@@ -76,6 +80,15 @@ const Drawer = styled(MuiDrawer, {
 export default function SideNav({ open, setOpen }) {
   const theme = useTheme();
   const navigate = useNavigate();
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      alert('Logout Successful!');
+      navigate('/login');
+    } catch (error) {
+      alert('Error logging out: ' + error.message);
+    }
+  };
   return (
     <>
       <CssBaseline />
@@ -357,6 +370,16 @@ export default function SideNav({ open, setOpen }) {
             </ListItemButton>
           </ListItem>
         </List>
+        <Box sx={{ p: 2, mb: 1 }}>
+          <Button
+            fullWidth
+            variant="contained"
+            startIcon={<LogoutIcon />}
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
+        </Box>
       </Drawer>
     </>
   );
