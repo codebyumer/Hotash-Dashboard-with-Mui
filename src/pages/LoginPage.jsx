@@ -37,7 +37,7 @@ const Login = () => {
         password: '',
       });
 
-      navigate('/Dashboard');
+      navigate('/');
     } catch (error) {
       switch (error.code) {
         case 'auth/invalid-credential':
