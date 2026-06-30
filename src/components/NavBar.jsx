@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import { styled, alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -120,7 +121,7 @@ export default function NavBar({ open, setOpen }) {
               }}
               color="inherit"
             >
-              <Avatar sx={{ bgcolor: '#424444' }}>
+              <Avatar sx={{ bgcolor: '#2f2f2f' }}>
                 {user?.displayName?.charAt(0).toUpperCase()}
               </Avatar>
             </IconButton>
