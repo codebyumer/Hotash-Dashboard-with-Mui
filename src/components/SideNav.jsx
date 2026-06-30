@@ -95,7 +95,7 @@ export default function SideNav({ open, setOpen }) {
             disablePadding
             sx={{ display: 'block' }}
             onClick={() => {
-              navigate('/');
+              navigate('/dashboard');
             }}
           >
             <ListItemButton
