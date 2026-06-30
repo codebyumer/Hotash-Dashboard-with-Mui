@@ -1,22 +1,14 @@
-import { useState } from "react";
-import {
-  Box,
-  Button,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../FirebaseConfig";
-import Dashboard from "./Dashboard";
-import Register from "./RegisterPage";
+import { useState } from 'react';
+import { Box, Button, Paper, TextField, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../FirebaseConfig';
 const Login = () => {
   const navigate = useNavigate();
 
   const [userData, setUserData] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
 
   const handleChange = (e) => {
@@ -32,36 +24,36 @@ const Login = () => {
     const { email, password } = userData;
 
     if (!email || !password) {
-      alert("Please fill all fields");
+      alert('Please fill all fields');
       return;
     }
     try {
       await signInWithEmailAndPassword(auth, email, password);
 
-      alert("Login Successful!");
+      alert('Login Successful!');
 
       setUserData({
-        email: "",
-        password: "",
+        email: '',
+        password: '',
       });
 
-      navigate("/Dashboard");
+      navigate('/Dashboard');
     } catch (error) {
       switch (error.code) {
-        case "auth/invalid-credential":
-          alert("Invalid email or password.");
+        case 'auth/invalid-credential':
+          alert('Invalid email or password.');
           break;
 
-        case "auth/user-not-found":
-          alert("User not found.");
+        case 'auth/user-not-found':
+          alert('User not found.');
           break;
 
-        case "auth/wrong-password":
-          alert("Incorrect password.");
+        case 'auth/wrong-password':
+          alert('Incorrect password.');
           break;
 
-        case "auth/invalid-email":
-          alert("Invalid email.");
+        case 'auth/invalid-email':
+          alert('Invalid email.');
           break;
 
         default:
@@ -73,11 +65,11 @@ const Login = () => {
   return (
     <Box
       sx={{
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        bgcolor: "#f5f5f5",
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        bgcolor: '#f5f5f5',
       }}
     >
       <Paper
@@ -88,11 +80,7 @@ const Login = () => {
           borderRadius: 3,
         }}
       >
-        <Typography
-          variant="h4"
-          textAlign="center"
-          mb={3}
-        >
+        <Typography variant="h4" textAlign="center" mb={3}>
           Login
         </Typography>
 
@@ -125,15 +113,9 @@ const Login = () => {
           Login
         </Button>
 
-        <Typography
-          textAlign="center"
-          sx={{ mt: 2 }}
-        >
-          Don't have an account?{" "}
-          <Button
-            variant="text"
-            onClick={() => navigate("/Register")}
-          >
+        <Typography textAlign="center" sx={{ mt: 2 }}>
+          Don't have an account?{' '}
+          <Button variant="text" onClick={() => navigate('/Register')}>
             Register
           </Button>
         </Typography>

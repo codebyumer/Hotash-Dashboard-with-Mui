@@ -1,23 +1,14 @@
-import { useState } from "react";
-import {
-  Box,
-  Button,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import {
-  createUserWithEmailAndPassword,
-  updateProfile,
-} from "firebase/auth";
-import { auth } from "../FirebaseConfig"; 
-import Login from "./LoginPage";
+import { useState } from 'react';
+import { Box, Button, Paper, TextField, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth } from '../FirebaseConfig';
 const Register = () => {
+  const navigate = useNavigate();
   const [userData, setUserData] = useState({
-    name: "",
-    email: "",
-    password: "",
+    name: '',
+    email: '',
+    password: '',
   });
 
   const handleChange = (e) => {
@@ -29,47 +20,47 @@ const Register = () => {
     }));
   };
 
-  const handleRegister = async() => {
+  const handleRegister = async () => {
     const { name, email, password } = userData;
 
-   if (!name || !email || !password) {
-    alert("Please fill all fields");
-    return;
-   }
-   if (password.length < 6) {
-    alert("Password must be at least 6 characters");
-    return;
-  }
-  try {
+    if (!name || !email || !password) {
+      alert('Please fill all fields');
+      return;
+    }
+    if (password.length < 6) {
+      alert('Password must be at least 6 characters');
+      return;
+    }
+    try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
-        password
+        password,
       );
       await updateProfile(userCredential.user, {
         displayName: name,
       });
 
-      alert("Registration Successful!");
+      alert('Registration Successful!');
 
       setUserData({
-        name: "",
-        email: "",
-        password: "",
+        name: '',
+        email: '',
+        password: '',
       });
-      navigate("/Login");
+      navigate('/Login');
     } catch (error) {
       switch (error.code) {
-        case "auth/email-already-in-use":
-          alert("Email already exists.");
+        case 'auth/email-already-in-use':
+          alert('Email already exists.');
           break;
 
-        case "auth/invalid-email":
-          alert("Invalid email.");
+        case 'auth/invalid-email':
+          alert('Invalid email.');
           break;
 
-        case "auth/weak-password":
-          alert("Password is too weak.");
+        case 'auth/weak-password':
+          alert('Password is too weak.');
           break;
 
         default:
@@ -81,11 +72,11 @@ const Register = () => {
   return (
     <Box
       sx={{
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        bgcolor: "#f5f5f5",
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        bgcolor: '#f5f5f5',
       }}
     >
       <Paper
@@ -96,11 +87,7 @@ const Register = () => {
           borderRadius: 3,
         }}
       >
-        <Typography
-          variant="h4"
-          textAlign="center"
-          mb={3}
-        >
+        <Typography variant="h4" textAlign="center" mb={3}>
           Register
         </Typography>
 
