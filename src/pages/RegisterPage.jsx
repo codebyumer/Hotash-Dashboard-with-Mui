@@ -87,7 +87,13 @@ const Register = () => {
           borderRadius: 3,
         }}
       >
-        <Typography variant="h4" textAlign="center" mb={3}>
+        <Typography
+          variant="h4"
+          sx={{
+            textAlign: 'center',
+            mb: 3,
+          }}
+        >
           Register
         </Typography>
 
