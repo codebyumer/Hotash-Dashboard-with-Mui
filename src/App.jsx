@@ -27,7 +27,7 @@ const App = () => {
       ),
       children: [
         {
-          index: true,
+          path: 'dashboard',
           element: <Dashboard />,
         },
         {

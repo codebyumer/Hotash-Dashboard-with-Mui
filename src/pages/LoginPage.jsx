@@ -37,7 +37,7 @@ const Login = () => {
         password: '',
       });
 
-      navigate('/Dashboard');
+      navigate('/dashboard');
     } catch (error) {
       switch (error.code) {
         case 'auth/invalid-credential':
@@ -80,7 +80,13 @@ const Login = () => {
           borderRadius: 3,
         }}
       >
-        <Typography variant="h4" textAlign="center" mb={3}>
+        <Typography
+          variant="h4"
+          sx={{
+            textAlign: 'center',
+            mb: 3,
+          }}
+        >
           Login
         </Typography>
 
@@ -115,7 +121,7 @@ const Login = () => {
 
         <Typography textAlign="center" sx={{ mt: 2 }}>
           Don't have an account?{' '}
-          <Button variant="text" onClick={() => navigate('/Register')}>
+          <Button variant="text" onClick={() => navigate('/register')}>
             Register
           </Button>
         </Typography>
