@@ -27,23 +27,23 @@ const App = () => {
       ),
       children: [
         {
-          path: '/',
+          index: true,
           element: <Dashboard />,
         },
         {
-          path: '/analytics',
+          path: 'analytics',
           element: <Analytics />,
         },
         {
-          path: '/products',
+          path: 'products',
           element: <Products />,
         },
         {
-          path: '/users',
+          path: 'users',
           element: <Users />,
         },
         {
-          path: '/settings',
+          path: 'settings',
           element: <Settings />,
         },
       ],
