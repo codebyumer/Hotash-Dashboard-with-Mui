@@ -21,12 +21,28 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import usersData from '../components/UserData';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../FirebaseConfig';
 
 export default function Users() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [users] = React.useState(usersData);
+  const [users, setUsers] = React.useState([]);
+
+  const getUsers = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'users'));
+
+      const usersList = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setUsers(usersList);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -53,6 +69,9 @@ export default function Users() {
   const getStatusColor = (status) => {
     return status === 'Active' ? 'success' : 'default';
   };
+  React.useEffect(() => {
+    getUsers();
+  }, []);
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -82,12 +101,6 @@ export default function Users() {
             <TextField {...params} size="small" label="Search Users" />
           )}
         />
-
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }} />
-
-        <Button variant="contained" endIcon={<AddCircleIcon />}>
-          Add User
-        </Button>
       </Stack>
 
       <Box height={10} />
@@ -119,12 +132,6 @@ export default function Users() {
                 style={{ minWidth: '100px', fontWeight: 600 }}
               >
                 Status
-              </TableCell>
-              <TableCell
-                align="left"
-                style={{ minWidth: '120px', fontWeight: 600 }}
-              >
-                Join Date
               </TableCell>
               <TableCell
                 align="center"
@@ -172,8 +179,6 @@ export default function Users() {
                       size="small"
                     />
                   </TableCell>
-
-                  <TableCell align="left">{user.joinDate}</TableCell>
 
                   <TableCell align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">

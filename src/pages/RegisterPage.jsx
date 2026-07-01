@@ -68,16 +68,17 @@ const Register = () => {
       });
       navigate('/Login');
     } catch (error) {
+      if (phone.length !== 11) {
+        alert('Phone number must be 11 digits');
+         
+        return;
+      }
       switch (error.code) {
         case 'auth/email-already-in-use':
           alert('Email already exists.');
           break;
-
         case 'auth/invalid-email':
           alert('Invalid email.');
-          break;
-        case 'phone/invalid-phone-number':
-          alert('Invalid phone number.');
           break;
         case 'auth/weak-password':
           alert('Password is too weak.');
