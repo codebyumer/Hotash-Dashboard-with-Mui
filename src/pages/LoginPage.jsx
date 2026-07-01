@@ -3,9 +3,13 @@ import { Box, Button, Paper, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../FirebaseConfig';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 const Login = () => {
   const navigate = useNavigate();
-
+  const [showPassword, setShowPassword] = useState(false);
   const [userData, setUserData] = useState({
     email: '',
     password: '',
@@ -39,6 +43,7 @@ const Login = () => {
 
       navigate('/dashboard');
     } catch (error) {
+      console.error('Login error:', error);
       switch (error.code) {
         case 'auth/invalid-credential':
           alert('Invalid email or password.');
@@ -104,10 +109,24 @@ const Login = () => {
           fullWidth
           label="Password"
           name="password"
-          type="password"
           margin="normal"
           value={userData.password}
           onChange={handleChange}
+          type={showPassword ? 'text' : 'password'}
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword(!showPassword)}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+          }}
         />
 
         <Button
@@ -119,7 +138,7 @@ const Login = () => {
           Login
         </Button>
 
-        <Typography textAlign="center" sx={{ mt: 2 }}>
+        <Typography sx={{ mt: 2, textAlign: 'center' }}>
           Don't have an account?{' '}
           <Button variant="text" onClick={() => navigate('/register')}>
             Register
