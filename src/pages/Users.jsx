@@ -9,7 +9,6 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
-import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
@@ -17,13 +16,13 @@ import Autocomplete from '@mui/material/Autocomplete';
 import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../FirebaseConfig';
-
+import { deleteDoc, doc } from 'firebase/firestore';
+import Swal from 'sweetalert2';
 export default function Users() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -42,6 +41,33 @@ export default function Users() {
     } catch (error) {
       console.log(error);
     }
+  };
+  const deleteUser = (id) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteApi(id);
+      }
+    });
+  };
+
+  const deleteApi = async (id) => {
+    const userDoc = doc(db, 'users', id);
+
+    await deleteDoc(userDoc);
+
+    Swal.fire('Deleted!', 'User has been deleted.', 'success');
+
+    getUsers();
+
+    setPage(0);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -188,7 +214,11 @@ export default function Users() {
                       <IconButton size="small" sx={{ color: 'blue' }}>
                         <EditIcon fontSize="small" />
                       </IconButton>
-                      <IconButton size="small" sx={{ color: 'darkred' }}>
+                      <IconButton
+                        size="small"
+                        sx={{ color: 'darkred' }}
+                        onClick={() => deleteUser(user.id)}
+                      >
                         <DeleteIcon fontSize="small" />
                       </IconButton>
                     </Stack>
