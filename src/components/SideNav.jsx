@@ -372,12 +372,17 @@ export default function SideNav({ open, setOpen }) {
         </List>
         <Box sx={{ p: 2, mb: 1 }}>
           <Button
-            fullWidth
+            fullWidth={open}
             variant="contained"
             startIcon={<LogoutIcon />}
             onClick={handleLogout}
+            sx={{
+              justifyContent: open ? 'flex-start' : 'center',
+              minWidth: 0,
+              px: open ? 2 : 1,
+            }}
           >
-            Logout
+            {open && 'Logout'}
           </Button>
         </Box>
       </Drawer>

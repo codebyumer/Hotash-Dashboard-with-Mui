@@ -27,17 +27,18 @@ export default function Users() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [users, setUsers] = React.useState([]);
-
+  const [allUsers, setAllUsers] = React.useState([]);
   const getUsers = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, 'users'));
+      const getUserQuery = await getDocs(collection(db, 'users'));
 
-      const usersList = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
+      const usersList = getUserQuery.docs.map((user) => ({
+        id: user.id,
+        ...user.data(),
       }));
 
       setUsers(usersList);
+      setAllUsers(usersList);
     } catch (error) {
       console.log(error);
     }
@@ -78,7 +79,14 @@ export default function Users() {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
+  const filterData = (v) => {
+    if (v) {
+      setUsers([v]);
+    } else {
+      setUsers(allUsers);
+    }
+    setPage(0);
+  };
   const getRoleColor = (role) => {
     switch (role) {
       case 'Admin':
@@ -98,7 +106,21 @@ export default function Users() {
   React.useEffect(() => {
     getUsers();
   }, []);
-
+  const viewUser = (user) => {
+    Swal.fire({
+      title: 'User Details',
+      html: `
+      <div style="text-align:left">
+        <p><b>Name:</b> ${user.name}</p>
+        <p><b>Email:</b> ${user.email}</p>
+        <p><b>Phone:</b> ${user.phone}</p>
+        <p><b>Role:</b> ${user.role}</p>
+        <p><b>Status:</b> ${user.status}</p>
+      </div>
+    `,
+      confirmButtonText: 'Close',
+    });
+  };
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <Typography
@@ -121,6 +143,7 @@ export default function Users() {
         <Autocomplete
           disablePortal
           options={users}
+          onChange={(e, v) => filterData(v)}
           sx={{ width: 300 }}
           getOptionLabel={(option) => option.name || ''}
           renderInput={(params) => (
@@ -208,7 +231,11 @@ export default function Users() {
 
                   <TableCell align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">
-                      <IconButton size="small" sx={{ color: 'green' }}>
+                      <IconButton
+                        size="small"
+                        sx={{ color: 'green' }}
+                        onClick={() => viewUser(user)}
+                      >
                         <VisibilityIcon fontSize="small" />
                       </IconButton>
                       <IconButton size="small" sx={{ color: 'blue' }}>

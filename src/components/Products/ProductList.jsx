@@ -125,7 +125,6 @@ export default function ProductsList() {
         >
           <Autocomplete
             disablePortal
-            id="combo-box-demo"
             options={rows}
             sx={{ width: 300 }}
             onChange={(e, v) => filterData(v)}
