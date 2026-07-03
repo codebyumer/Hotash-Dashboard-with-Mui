@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState } from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -23,11 +24,27 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../FirebaseConfig';
 import { deleteDoc, doc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
+import EditUsers from '../components/Users/EditUsers';
 export default function Users() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [users, setUsers] = React.useState([]);
   const [allUsers, setAllUsers] = React.useState([]);
+  const [editOpen, setEditOpen] = React.useState(false);
+  const [userId, setUserId] = useState(false);
+  const handleEditOpen = () => setEditOpen(true);
+  const handleEditClose = () => setEditOpen(false);
+  const editUser = (id, firstName, lastName, email, phone) => {
+    const data = {
+      id: id,
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phone: phone,
+    };
+    setUserId(data);
+    handleEditOpen();
+  };
   const getUsers = async () => {
     try {
       const getUserQuery = await getDocs(collection(db, 'users'));
@@ -111,7 +128,7 @@ export default function Users() {
       title: 'User Details',
       html: `
       <div style="text-align:left">
-        <p><b>Name:</b> ${user.name}</p>
+        <p><b>Name:</b> ${user.firstName} ${user.lastName}</p>
         <p><b>Email:</b> ${user.email}</p>
         <p><b>Phone:</b> ${user.phone}</p>
         <p><b>Role:</b> ${user.role}</p>
@@ -132,7 +149,12 @@ export default function Users() {
         Users Management
       </Typography>
       <Divider />
-
+      <EditUsers
+        key={userId?.id || 'new'}
+        open={editOpen}
+        handleClose={handleEditClose}
+        user={userId}
+      />
       <Box height={10} />
 
       <Stack
@@ -145,7 +167,7 @@ export default function Users() {
           options={users}
           onChange={(e, v) => filterData(v)}
           sx={{ width: 300 }}
-          getOptionLabel={(option) => option.name || ''}
+          getOptionLabel={(option) => option.firstName || ''}
           renderInput={(params) => (
             <TextField {...params} size="small" label="Search Users" />
           )}
@@ -192,66 +214,93 @@ export default function Users() {
           </TableHead>
 
           <TableBody>
-            {users
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((user) => (
-                <TableRow key={user.id} hover role="checkbox" tabIndex={-1}>
-                  <TableCell align="left">
-                    <Stack direction="row" spacing={2} alignItems="center">
-                      <Avatar src={user.avatar} alt={user.name} />
-                      <Box>
-                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                          {user.name}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {user.email}
-                        </Typography>
-                      </Box>
-                    </Stack>
-                  </TableCell>
-
-                  <TableCell align="left">{user.phone}</TableCell>
-
-                  <TableCell align="left">
-                    <Chip
-                      label={user.role}
-                      color={getRoleColor(user.role)}
-                      size="small"
-                      variant="outlined"
-                    />
-                  </TableCell>
-
-                  <TableCell align="left">
-                    <Chip
-                      label={user.status}
-                      color={getStatusColor(user.status)}
-                      size="small"
-                    />
-                  </TableCell>
-
-                  <TableCell align="center">
-                    <Stack direction="row" spacing={1} justifyContent="center">
-                      <IconButton
-                        size="small"
-                        sx={{ color: 'green' }}
-                        onClick={() => viewUser(user)}
+            {users.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} align="center">
+                  No Users Found
+                </TableCell>
+              </TableRow>
+            ) : (
+              users
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((user) => (
+                  <TableRow key={user.id} hover role="checkbox" tabIndex={-1}>
+                    <TableCell sx={{ align: 'left' }}>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{ alignItems: 'center' }}
                       >
-                        <VisibilityIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton size="small" sx={{ color: 'blue' }}>
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
+                        <Avatar src={user.avatar} alt={user.name} />
+                        <Box>
+                          <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                            {user.firstName} {user.lastName}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {user.email}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                    </TableCell>
+
+                    <TableCell align="left">{user.phone}</TableCell>
+
+                    <TableCell align="left">
+                      <Chip
+                        label={user.role}
+                        color={getRoleColor(user.role)}
                         size="small"
-                        sx={{ color: 'darkred' }}
-                        onClick={() => deleteUser(user.id)}
+                        variant="outlined"
+                      />
+                    </TableCell>
+
+                    <TableCell align="left">
+                      <Chip
+                        label={user.status}
+                        color={getStatusColor(user.status)}
+                        size="small"
+                      />
+                    </TableCell>
+
+                    <TableCell align="center">
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{ justifyContent: 'center' }}
                       >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              ))}
+                        <IconButton
+                          size="small"
+                          sx={{ color: 'green' }}
+                          onClick={() => viewUser(user)}
+                        >
+                          <VisibilityIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton size="small" sx={{ color: 'blue' }}>
+                          <EditIcon
+                            fontSize="small"
+                            onClick={() =>
+                              editUser(
+                                user.id,
+                                user.firstName,
+                                user.lastName,
+                                user.email,
+                                user.phone,
+                              )
+                            }
+                          />
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          sx={{ color: 'darkred' }}
+                          onClick={() => deleteUser(user.id)}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>

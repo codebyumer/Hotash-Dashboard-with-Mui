@@ -13,7 +13,8 @@ const Register = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [userData, setUserData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
     password: '',
@@ -29,9 +30,9 @@ const Register = () => {
   };
 
   const handleRegister = async () => {
-    const { name, email, phone, password } = userData;
+    const { firstName, lastName, email, phone, password } = userData;
 
-    if (!name || !email || !phone || !password) {
+    if (!firstName || !lastName || !email || !phone || !password) {
       alert('Please fill all fields');
       return;
     }
@@ -46,11 +47,12 @@ const Register = () => {
         password,
       );
       await updateProfile(userCredential.user, {
-        displayName: name,
+        displayName: `${firstName} ${lastName}`,
       });
       await setDoc(doc(db, 'users', userCredential.user.uid), {
         uid: userCredential.user.uid,
-        name,
+        firstName,
+        lastName,
         email,
         phone,
         role: 'User',
@@ -61,7 +63,8 @@ const Register = () => {
       alert('Registration Successful!');
 
       setUserData({
-        name: '',
+        firstName: '',
+        lastName: '',
         email: '',
         phone: '',
         password: '',
@@ -70,7 +73,7 @@ const Register = () => {
     } catch (error) {
       if (phone.length !== 11) {
         alert('Phone number must be 11 digits');
-         
+
         return;
       }
       switch (error.code) {
@@ -120,10 +123,18 @@ const Register = () => {
 
         <TextField
           fullWidth
-          label="Name"
-          name="name"
+          label="First Name"
+          name="firstName"
           margin="normal"
-          value={userData.name}
+          value={userData.firstName}
+          onChange={handleChange}
+        />
+        <TextField
+          fullWidth
+          label="Last Name"
+          name="lastName"
+          margin="normal"
+          value={userData.lastName}
           onChange={handleChange}
         />
 

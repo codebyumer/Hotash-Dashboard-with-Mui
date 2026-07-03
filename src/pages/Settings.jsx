@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
@@ -24,29 +25,78 @@ import LockIcon from '@mui/icons-material/Lock';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import EmailIcon from '@mui/icons-material/Email';
 import SmsIcon from '@mui/icons-material/Sms';
-import LanguageIcon from '@mui/icons-material/Language';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
 import SecurityIcon from '@mui/icons-material/Security';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-
+import { getAuth } from 'firebase/auth';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../FirebaseConfig';
+import { storage } from '../FirebaseConfig';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import Swal from 'sweetalert2';
 export default function Settings() {
   const [tabValue, setTabValue] = React.useState(0);
-  const [darkMode, setDarkMode] = React.useState(false);
   const [emailNotif, setEmailNotif] = React.useState(true);
   const [smsNotif, setSmsNotif] = React.useState(false);
   const [pushNotif, setPushNotif] = React.useState(true);
-
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [photoURL, setPhotoURL] = useState('');
+  const auth = getAuth();
+  const currentUser = auth.currentUser;
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
+  const getProfile = async () => {
+    const userRef = doc(db, 'users', currentUser.uid);
+    const snap = await getDoc(userRef);
+    const data = snap.data();
+    setFirstName(data.firstName);
+    setLastName(data.lastName);
+    setEmail(data.email);
+    setPhone(data.phone);
+    setPhotoURL(data.photoURL || '');
+  };
+  React.useEffect(() => {
+    if (currentUser) {
+      getProfile();
+    }
+  }, [currentUser]);
+  const uploadImage = async (e) => {
+    const file = e.target.files[0];
 
-  const languages = [
-    { value: 'en', label: 'English' },
-    { value: 'ur', label: 'Urdu' },
-    { value: 'itl', label: 'Italian' },
-    { value: 'fr', label: 'French' },
-  ];
+    if (!file) return;
 
+    const imageRef = ref(storage, `profileImages/${currentUser.uid}`);
+
+    await uploadBytes(imageRef, file);
+
+    const url = await getDownloadURL(imageRef);
+
+    setPhotoURL(url);
+
+    await updateDoc(doc(db, 'users', currentUser.uid), {
+      photoURL: url,
+    });
+  };
+  const saveChanges = async () => {
+    const userRef = doc(db, 'users', currentUser.uid);
+
+    await updateDoc(userRef, {
+      firstName,
+      lastName,
+      email,
+      phone,
+      photoURL,
+    });
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: 'Your profile has been updated successfully.',
+      confirmButtonColor: '#1976d2',
+    });
+  };
   return (
     <Box sx={{ width: '100%' }}>
       <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
@@ -80,11 +130,6 @@ export default function Settings() {
                 iconPosition="start"
                 label="Notifications"
               />
-              <Tab
-                icon={<LanguageIcon />}
-                iconPosition="start"
-                label="Preferences"
-              />
             </Tabs>
           </Paper>
         </Grid>
@@ -110,7 +155,14 @@ export default function Settings() {
                   sx={{ mb: 4 }}
                 >
                   <Box sx={{ position: 'relative' }}>
-                    <Avatar src="" sx={{ width: 100, height: 100 }} />
+                    <Avatar src={photoURL} sx={{ width: 100, height: 100 }} />
+                    <input
+                      type="file"
+                      id="profile-image"
+                      hidden
+                      accept="image/*"
+                      onChange={uploadImage}
+                    />
                     <IconButton
                       sx={{
                         position: 'absolute',
@@ -121,16 +173,25 @@ export default function Settings() {
                         '&:hover': { bgcolor: 'primary.dark' },
                       }}
                       size="small"
+                      htmlFor="profile-image"
+                      component="label"
                     >
                       <PhotoCameraIcon fontSize="small" />
                     </IconButton>
                   </Box>
                   <Box>
-                    <Typography variant="h6">Ali Khan</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      ali@example.com
+                    <Typography variant="h6">
+                      {firstName} {lastName}
                     </Typography>
-                    <Button size="small" sx={{ mt: 1 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      {email}
+                    </Typography>
+                    <Button
+                      size="small"
+                      sx={{ mt: 1 }}
+                      htmlFor="profile-image"
+                      component="label"
+                    >
                       Change Photo
                     </Button>
                   </Box>
@@ -139,7 +200,8 @@ export default function Settings() {
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
                       label="First Name"
-                      defaultValue="Ali"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
                       fullWidth
                       size="small"
                     />
@@ -147,7 +209,8 @@ export default function Settings() {
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
                       label="Last Name"
-                      defaultValue="Khan"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
                       fullWidth
                       size="small"
                     />
@@ -155,7 +218,8 @@ export default function Settings() {
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
                       label="Email"
-                      defaultValue="ali@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       fullWidth
                       size="small"
                     />
@@ -163,19 +227,10 @@ export default function Settings() {
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
                       label="Phone"
-                      defaultValue="+92 300 1234567"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
                       fullWidth
                       size="small"
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12 }}>
-                    <TextField
-                      label="Address"
-                      defaultValue="Karachi, Pakistan"
-                      fullWidth
-                      size="small"
-                      multiline
-                      rows={2}
                     />
                   </Grid>
                 </Grid>
@@ -189,7 +244,11 @@ export default function Settings() {
                   }}
                 >
                   <Button variant="outlined">Cancel</Button>
-                  <Button variant="contained" startIcon={<SaveIcon />}>
+                  <Button
+                    variant="contained"
+                    startIcon={<SaveIcon />}
+                    onClick={saveChanges}
+                  >
                     Save Changes
                   </Button>
                 </Box>
